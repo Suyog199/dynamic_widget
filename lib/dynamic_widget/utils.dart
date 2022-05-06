@@ -74,7 +74,7 @@ TextOverflow? parseTextOverflow(String? textOverflowString) {
 }
 
 String? exportTextOverflow(TextOverflow? textOverflow) {
-  if(textOverflow == null){
+  if (textOverflow == null) {
     return null;
   }
   String rt = "ellipsis";
@@ -1137,6 +1137,89 @@ Map<String, dynamic> exportConstraints(BoxConstraints constraints) {
         ? infinity
         : constraints.maxHeight,
   };
+}
+
+Map<String, dynamic> exportDecoration(BoxDecoration decoration) {
+  return {
+    "border": decoration.border == null
+        ? null
+        : exportBoxBorder(
+            decoration.border as Border,
+          ),
+    "borderRadius": decoration.borderRadius == null
+        ? null
+        : exportBorderRadius(decoration.borderRadius as BorderRadius),
+    "boxShadow": decoration.boxShadow == null
+        ? null
+        : exportBoxShadow(decoration.boxShadow!),
+    "color": decoration.color != null
+        ? decoration.color!.value.toRadixString(16)
+        : null,
+  };
+}
+
+BoxDecoration parseDecoration(Map<String, dynamic> map) {
+  return BoxDecoration(
+    border: map["border"] == null ? null : parseBorder(map['border']),
+    borderRadius: map["borderRadius"] == null
+        ? null
+        : parseBorderRadius(map['borderRadius']),
+    boxShadow:
+        map["boxShadow"] == null ? null : parseBoxShadow(map['boxShadow']),
+    color: map["color"] == null ? null : parseHexColor(map["color"]),
+  );
+}
+
+Map<String, dynamic> exportBoxShadow(List<BoxShadow> boxShadow) {
+  return {
+    "boxShadow": List.generate(
+      boxShadow.length,
+      (index) => {
+        'offset': exportOffset(boxShadow[index].offset),
+        'blurRadius': boxShadow[index].blurRadius.toString(),
+        'color': boxShadow[index].color.value.toRadixString(16)
+      },
+    )
+  };
+}
+
+List<BoxShadow> parseBoxShadow(Map<String, dynamic> map) {
+  return List.generate(
+    map["boxShadow"].length,
+    (index) => BoxShadow(
+        offset: parseOffset(map["boxShadow"][index]["offset"]),
+        blurRadius: double.parse(map["boxShadow"][index]["blurRadius"]),
+        color: parseHexColor(map["boxShadow"][index]["color"])!),
+  );
+}
+
+Map<String, dynamic> exportOffset(Offset offset) {
+  return {
+    "dx": offset.dx.toString(),
+    "dy": offset.dy.toString(),
+  };
+}
+
+Offset parseOffset(Map<String, dynamic> map) {
+  return Offset(double.parse(map["dx"]), double.parse(map["dy"]));
+}
+
+Map<String, dynamic> exportBoxBorder(Border border) {
+  return {
+    'bottom': exportBorderSide(border.top),
+    'left': exportBorderSide(border.left),
+    'right': exportBorderSide(border.right),
+    'top': exportBorderSide(border.bottom),
+  };
+}
+
+Border parseBorder(Map<String, dynamic> map) {
+  return Border(
+    top: parseBorderSide(map['top']),
+    bottom: parseBorderSide(map['bottom']),
+    left: parseBorderSide(map['left']),
+    right: parseBorderSide(map['right']),
+  );
 }
 
 /// BorderSide

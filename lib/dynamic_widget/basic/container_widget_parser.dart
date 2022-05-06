@@ -9,10 +9,12 @@ class ContainerWidgetParser extends WidgetParser {
     Alignment? alignment = parseAlignment(map['alignment']);
     Color? color = parseHexColor(map['color']);
     BoxConstraints constraints = parseBoxConstraints(map['constraints']);
-    //TODO: decoration, foregroundDecoration and transform properties to be implemented.
+
     EdgeInsetsGeometry? margin = parseEdgeInsetsGeometry(map['margin']);
     EdgeInsetsGeometry? padding = parseEdgeInsetsGeometry(map['padding']);
     Map<String, dynamic>? childMap = map['child'];
+    final Decoration? boxDecoration =
+        map["decoration"] == null ? null : parseDecoration(map["decoration"]);
     Widget? child = childMap == null
         ? null
         : DynamicWidgetBuilder.buildFromMap(childMap, buildContext, listener);
@@ -52,6 +54,8 @@ class ContainerWidgetParser extends WidgetParser {
     var padding = realWidget.padding as EdgeInsets?;
     var margin = realWidget.margin as EdgeInsets?;
     var constraints = realWidget.constraints;
+    final decoration = realWidget.decoration;
+
     return <String, dynamic>{
       "type": widgetName,
       "alignment": realWidget.alignment != null
@@ -65,6 +69,9 @@ class ContainerWidgetParser extends WidgetParser {
           : null,
       "margin": margin != null
           ? "${margin.left},${margin.top},${margin.right},${margin.bottom}"
+          : null,
+      "decoration": decoration != null
+          ? exportDecoration(decoration as BoxDecoration)
           : null,
       "constraints":
           constraints != null ? exportConstraints(constraints) : null,
